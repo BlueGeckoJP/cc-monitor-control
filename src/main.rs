@@ -7,6 +7,11 @@ struct HealthResponse {
     message: String,
 }
 
+#[derive(Serialize)]
+struct FrameData {
+    frame: String,
+}
+
 #[get("/healthcheck")]
 async fn healthcheck() -> impl Responder {
     let response = HealthResponse {
@@ -23,6 +28,60 @@ async fn download_client() -> impl Responder {
 
     let path: PathBuf = "./client.lua".parse().unwrap();
     NamedFile::open(path)
+}
+
+#[get("/test-frame")]
+async fn test_frame() -> impl Responder {
+    let frame_json = FrameData {
+        frame: generate_test_frame(64, 32, "gradient"),
+    };
+
+    let json_string = serde_json::to_string(&frame_json).unwrap();
+    HttpResponse::Ok()
+        .content_type("application/json")
+        .body(json_string)
+}
+
+fn generate_test_frame(width: usize, height: usize, pattern: &str) -> String {
+    let mut frame = String::with_capacity(width * height);
+
+    for y in 0..height {
+        for x in 0..width {
+            // Create different patterns based on the pattern parameter
+            let color = match pattern {
+                "gradient" => {
+                    // Horizontal gradient
+                    let ratio = (x as f32 / width as f32 * 15.0) as u8;
+                    format!("{:x}", ratio)
+                }
+                "vertical" => {
+                    // Vertical gradient
+                    let ratio = (y as f32 / height as f32 * 15.0) as u8;
+                    format!("{:x}", ratio)
+                }
+                "checkerboard" => {
+                    // Checkerboard pattern
+                    if (x + y) % 2 == 0 {
+                        "f".to_string()
+                    } else {
+                        "0".to_string()
+                    }
+                }
+                "rainbow" => {
+                    // Rainbow pattern
+                    let color_idx = ((x + y) % 16) as u8;
+                    format!("{:x}", color_idx)
+                }
+                _ => {
+                    // Default: random-like pattern based on position
+                    format!("{:x}", ((x * 7 + y * 13) % 16) as u8)
+                }
+            };
+            frame.push_str(&color);
+        }
+    }
+
+    frame
 }
 
 #[actix_web::main]
