@@ -258,7 +258,7 @@ const getColorHex = (blit: string): string => {
             <h2 class="text-xl font-semibold mb-4">Canvas</h2>
             <div class="overflow-auto bg-gray-700 p-4 rounded-lg">
               <div
-                class="inline-block border-2 border-gray-600"
+                class="inline-block border-2 border-gray-600 select-none"
                 @mousedown="startDrawing"
                 @mouseup="stopDrawing"
                 @mouseleave="stopDrawing"
