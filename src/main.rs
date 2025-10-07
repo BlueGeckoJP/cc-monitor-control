@@ -1,4 +1,4 @@
-use actix_web::{App, HttpResponse, HttpServer, Responder, get};
+use actix_web::{App, HttpResponse, HttpServer, Responder, get, middleware::Logger};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -27,10 +27,17 @@ async fn download_client() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("Starting server at http://0.0.0.0:8080");
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    HttpServer::new(|| App::new().service(healthcheck).service(download_client))
-        .bind(("0.0.0.0", 8080))?
-        .run()
-        .await
+    log::info!("Starting server at http://0.0.0.0:8080");
+
+    HttpServer::new(|| {
+        App::new()
+            .wrap(Logger::default())
+            .service(healthcheck)
+            .service(download_client)
+    })
+    .bind(("0.0.0.0", 8080))?
+    .run()
+    .await
 }
