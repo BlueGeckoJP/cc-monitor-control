@@ -1,7 +1,8 @@
 # cc-monitor-control
 
-** A tiny tool for drawing contents of CC: Tweaked mod monitors via the web UI **
-** CC: Tweaked Modのモニターに表示させる絵をウェブUIで書きたいがために作った謎ツール **
+**A tiny tool for drawing contents of CC: Tweaked mod monitors via the web UI**
+
+**CC: Tweaked Modのモニターに表示させる絵をウェブUIで書きたいがために作った謎ツール**
 
 ## Q&A?
 * Q. なぜLua?
