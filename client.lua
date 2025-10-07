@@ -7,12 +7,11 @@ local textutils = textutils
 local http = http
 local colors = colors
 
-local monitor = peripheral.wrap("left") -- TODO: Change side if needed
+local monitor = peripheral.wrap("") -- This value is set before the download
 print(monitor.getSize())
 
 -- HTTP Settings
-local server_url = "http://192.168.2.103:8080" -- TODO: Change
-local frame_endpoint = server_url .. "/get-frame"
+local frame_endpoint = "" -- This value is set before the download
 print("HTTP client initialized")
 
 local function drawFrame(frame)
