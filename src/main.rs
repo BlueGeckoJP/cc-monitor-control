@@ -1,3 +1,6 @@
+use std::path::PathBuf;
+
+use actix_files::{self, Files, NamedFile};
 use actix_web::{App, HttpResponse, HttpServer, Responder, get, middleware::Logger};
 use serde::Serialize;
 
@@ -59,9 +62,6 @@ async fn healthcheck() -> impl Responder {
 
 #[get("/download-client")]
 async fn download_client() -> impl Responder {
-    use actix_files::NamedFile;
-    use std::path::PathBuf;
-
     let path: PathBuf = "./client.lua".parse().unwrap();
     NamedFile::open(path)
 }
@@ -132,6 +132,11 @@ async fn main() -> std::io::Result<()> {
             .service(healthcheck)
             .service(download_client)
             .service(test_frame)
+            .service(
+                Files::new("/", "./web-ui/dist")
+                    .index_file("index.html")
+                    .use_last_modified(true),
+            )
     })
     .bind(("0.0.0.0", 8080))?
     .run()
