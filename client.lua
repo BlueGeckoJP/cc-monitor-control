@@ -13,7 +13,6 @@ print(monitor.getSize())
 -- HTTP Settings
 local server_url = "http://192.168.2.103:8080" -- TODO: Change
 local frame_endpoint = server_url .. "/test-frame"
-local ready_endpoint = server_url .. "/ready"
 print("HTTP client initialized")
 
 local function drawFrame(frame)
@@ -52,14 +51,11 @@ while true do
         local ok, tbl = pcall(textutils.unserializeJSON, msg)
         if ok and tbl and tbl.frame then
             drawFrame(tbl.frame)
-            
-            -- Notify server ready
-            http.post(ready_endpoint, '{"ready":true}', {["Content-Type"] = "application/json"})
         end
     end
 
     -- Frame rate adjustment
-    sleep(0.05)
+    sleep(0.5)
 
     -- Stop condition (Press Ctrl+T to stop)
 end

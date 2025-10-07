@@ -33,7 +33,7 @@ async fn download_client() -> impl Responder {
 #[get("/test-frame")]
 async fn test_frame() -> impl Responder {
     let frame_json = FrameData {
-        frame: generate_test_frame(64, 32, "gradient"),
+        frame: generate_test_frame(82, 40, "rainbow"),
     };
 
     let json_string = serde_json::to_string(&frame_json).unwrap();
@@ -95,6 +95,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .service(healthcheck)
             .service(download_client)
+            .service(test_frame)
     })
     .bind(("0.0.0.0", 8080))?
     .run()
