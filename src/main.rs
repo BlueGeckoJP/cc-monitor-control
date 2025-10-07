@@ -19,42 +19,6 @@ struct AppState {
     current_frame: Mutex<String>,
 }
 
-#[derive(Debug, strum_macros::Display)]
-enum CCColors {
-    #[strum(serialize = "0")]
-    White,
-    #[strum(serialize = "1")]
-    Orange,
-    #[strum(serialize = "2")]
-    Magenta,
-    #[strum(serialize = "3")]
-    LightBlue,
-    #[strum(serialize = "4")]
-    Yellow,
-    #[strum(serialize = "5")]
-    Lime,
-    #[strum(serialize = "6")]
-    Pink,
-    #[strum(serialize = "7")]
-    Gray,
-    #[strum(serialize = "8")]
-    LightGray,
-    #[strum(serialize = "9")]
-    Cyan,
-    #[strum(serialize = "a")]
-    Purple,
-    #[strum(serialize = "b")]
-    Blue,
-    #[strum(serialize = "c")]
-    Brown,
-    #[strum(serialize = "d")]
-    Green,
-    #[strum(serialize = "e")]
-    Red,
-    #[strum(serialize = "f")]
-    Black,
-}
-
 #[get("/healthcheck")]
 async fn healthcheck() -> impl Responder {
     let response = HealthResponse {
