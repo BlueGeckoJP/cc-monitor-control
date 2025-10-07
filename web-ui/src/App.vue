@@ -122,6 +122,29 @@ const copyToClipboard = async () => {
   }
 };
 
+// Send to server
+const sendToServer = async () => {
+  try {
+    const blitLines = canvas.value.map((row) => row.join(""));
+    const blitString = blitLines.join("");
+
+    const response = await fetch(
+      `http://localhost:8080/save-frame/${encodeURIComponent(blitString)}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.ok) {
+      alert("Successfully sent to server!");
+    } else {
+      alert("Failed to send to server");
+    }
+  } catch (err) {
+    alert("Error sending to server: " + err);
+  }
+};
+
 // Get color hex from blit character
 const getColorHex = (blit: string): string => {
   const color = colors.find((c) => c.blit === blit);
@@ -208,6 +231,12 @@ const getColorHex = (blit: string): string => {
           <!-- Actions -->
           <div class="bg-gray-800 rounded-lg p-6 space-y-3">
             <h2 class="text-xl font-semibold mb-4">Actions</h2>
+            <button
+              @click="sendToServer"
+              class="w-full bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg font-semibold transition-colors"
+            >
+              Send to Server
+            </button>
             <button
               @click="exportToBlit"
               class="w-full bg-green-600 hover:bg-green-700 px-4 py-3 rounded-lg font-semibold transition-colors"

@@ -12,7 +12,7 @@ print(monitor.getSize())
 
 -- HTTP Settings
 local server_url = "http://192.168.2.103:8080" -- TODO: Change
-local frame_endpoint = server_url .. "/test-frame"
+local frame_endpoint = server_url .. "/get-frame"
 print("HTTP client initialized")
 
 local function drawFrame(frame)

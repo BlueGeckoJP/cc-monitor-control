@@ -1,7 +1,7 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Mutex};
 
 use actix_files::{self, Files, NamedFile};
-use actix_web::{App, HttpResponse, HttpServer, Responder, get, middleware::Logger};
+use actix_web::{App, HttpResponse, HttpServer, Responder, get, middleware::Logger, web};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -13,6 +13,10 @@ struct HealthResponse {
 #[derive(Serialize)]
 struct FrameData {
     frame: String,
+}
+
+struct AppState {
+    current_frame: Mutex<String>,
 }
 
 #[derive(Debug, strum_macros::Display)]
@@ -78,6 +82,30 @@ async fn test_frame() -> impl Responder {
         .body(json_string)
 }
 
+#[get("/save-frame/{frame}")]
+async fn save_frame(data: web::Data<AppState>, frame: web::Path<String>) -> impl Responder {
+    let frame_data = frame.into_inner();
+
+    data.current_frame
+        .lock()
+        .unwrap()
+        .replace_range(.., &frame_data);
+
+    HttpResponse::Ok()
+}
+
+#[get("/get-frame")]
+async fn get_frame(data: web::Data<AppState>) -> impl Responder {
+    let frame_data = data.current_frame.lock().unwrap().clone();
+
+    let frame_json = FrameData { frame: frame_data };
+
+    let json_string = serde_json::to_string(&frame_json).unwrap();
+    HttpResponse::Ok()
+        .content_type("application/json")
+        .body(json_string)
+}
+
 fn generate_test_frame(width: usize, height: usize, pattern: &str) -> String {
     let mut frame = String::with_capacity(width * height);
 
@@ -126,12 +154,19 @@ async fn main() -> std::io::Result<()> {
 
     log::info!("Starting server at http://0.0.0.0:8080");
 
-    HttpServer::new(|| {
+    let app_state = web::Data::new(AppState {
+        current_frame: Mutex::new(String::new()),
+    });
+
+    HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
+            .app_data(app_state.clone())
             .service(healthcheck)
             .service(download_client)
             .service(test_frame)
+            .service(save_frame)
+            .service(get_frame)
             .service(
                 Files::new("/", "./web-ui/dist")
                     .index_file("index.html")
